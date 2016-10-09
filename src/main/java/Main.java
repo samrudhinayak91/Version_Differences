@@ -21,14 +21,15 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 public class Main {
-    static DirectedGraph<String, DefaultEdge> callgraph1 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-    static DirectedGraph<String, DefaultEdge> callgraph2 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-    static DirectedGraph<String, DefaultEdge> depgraph1 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-    static DirectedGraph<String, DefaultEdge> depgraph2 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-    static SimpleDirectedGraph<String, DefaultEdge> inhergraph1 = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-    static SimpleDirectedGraph<String, DefaultEdge> inhergraph2 = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 
     public static void main(String[] args) {
+        //declaring variables
+        DirectedGraph<String, DefaultEdge> callgraph1 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        DirectedGraph<String, DefaultEdge> callgraph2 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        DirectedGraph<String, DefaultEdge> depgraph1 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        DirectedGraph<String, DefaultEdge> depgraph2 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        SimpleDirectedGraph<String, DefaultEdge> inhergraph1 = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        //taking in the path of the udb file
         String dirname1;
         Scanner in1 = new Scanner(System.in);
         System.out.println("Please enter the directory path for first udb");
@@ -37,97 +38,41 @@ public class Main {
         Scanner in2 = new Scanner(System.in);
         System.out.println("Please enter the directory path for second udb");
         dirname2 = in2.nextLine();
+        //creating the different graphs
+        callgraph1=createcallgraph(dirname1);
+        callgraph2=createcallgraph(dirname2);
+        depgraph1=createdirgraph(dirname1);
+        depgraph2=createdirgraph(dirname2);
+        inhergraph1=createinhergraph(dirname1);
+        //printing the different graphs
+        System.out.println("Call Graph 1    " + callgraph1);
+        System.out.println("Call Graph 2    " + callgraph2);
+        System.out.println("Dependency Graph 1    " + depgraph1);
+        System.out.println("Dependency Graph 2    " + depgraph2);
+        //getting the isomorphism of call graphs
+        String isocallgraph=getisocall(callgraph1, callgraph2);
+        System.out.println(isocallgraph);
+        //getting the isomorphism of dependency graphs
+        String isodepgraph=getisodep(depgraph1, depgraph2);
+        System.out.println(isodepgraph);
+        SimpleDirectedGraph<String, DefaultEdge> inhergraph2 = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        //taking in the names to compute transitive closure
+        System.out.println("Enter class names seperated by commas for transitive closure");
+        Scanner inh=new Scanner(System.in);
+        String str = inh.nextLine();
+        String[] strArr = str.split(",");
+        //computing transitive closure
+        inhergraph2=gettransitiveclosure(inhergraph1,strArr);
+        System.out.println("Graph with transitive closure is : " + inhergraph2);
+    }
+    //method to create inheritance graphs
+    public static SimpleDirectedGraph<String,DefaultEdge> createinhergraph(String dirname1)
+    {
+        SimpleDirectedGraph<String, DefaultEdge> inhergraph1 = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        File f= new File(dirname1);
         try {
 //Open the Understand Database
-            Database db = Understand.open(dirname1);
-// Get a list of all functions and methods
-            Entity[] funcs = db.ents("function ~unknown ~unresolved,method ~unknown ~unresolved");
-            for (Entity e : funcs) {
-                callgraph1.addVertex(e.name().toString());
-                ArrayList<String> params = new ArrayList<String>();
-                Reference[] parameterRefs = e.refs("call", "function ~unknown ~unresolved,method ~unknown ~unresolved", true);
-                for (Reference pRef : parameterRefs) {
-                    Entity pEnt = pRef.ent();
-                    params.add(pEnt.name().toString());
-                }
-                for (String a : params) {
-                    callgraph1.addVertex(a);
-                    callgraph1.addEdge(e.name().toString(), a);
-                }
-            }
-        } catch (UnderstandException e) {
-            System.out.println("Failed opening Database:" + e.getMessage());
-            System.exit(0);
-        }
-        try {
-//Open the Understand Database
-            Database db = Understand.open(dirname2);
-// Get a list of all functions and methods
-            Entity[] funcs = db.ents("function ~unknown ~unresolved,method ~unknown ~unresolved");
-            for (Entity e : funcs) {
-                callgraph2.addVertex(e.name().toString());
-                ArrayList<String> params = new ArrayList<String>();
-                Reference[] parameterRefs = e.refs("call", "function ~unknown ~unresolved,method ~unknown ~unresolved", true);
-                for (Reference pRef : parameterRefs) {
-                    Entity pEnt = pRef.ent();
-                    params.add(pEnt.name().toString());
-                }
-                for (String a : params) {
-                    callgraph2.addVertex(a);
-                    callgraph2.addEdge(e.name().toString(), a);
-                }
-            }
-        } catch (UnderstandException e) {
-            System.out.println("Failed opening Database:" + e.getMessage());
-            System.exit(0);
-        }
-        try {
-//Open the Understand Database
-            Database db = Understand.open(dirname1);
-// Get a list of all classes
-            Entity[] funcs = db.ents("class ~unknown ~unresolved");
-            for (Entity e : funcs) {
-                depgraph1.addVertex(e.name().toString());
-                ArrayList<String> params = new ArrayList<String>();
-                Reference[] parameterRefs = e.refs("Couple", " ", true);
-                for (Reference pRef : parameterRefs) {
-                    Entity pEnt = pRef.ent();
-                    params.add(pEnt.name().toString());
-                }
-                for (String a : params) {
-                    depgraph1.addVertex(a);
-                    depgraph1.addEdge(e.name().toString(), a);
-                }
-            }
-        } catch (UnderstandException e) {
-            System.out.println("Failed opening Database:" + e.getMessage());
-            System.exit(0);
-        }
-        try {
-//Open the Understand Database
-            Database db = Understand.open(dirname2);
-// Get a list of all classes
-            Entity[] funcs = db.ents("class ~unknown ~unresolved");
-            for (Entity e : funcs) {
-                depgraph2.addVertex(e.name().toString());
-                ArrayList<String> params = new ArrayList<String>();
-                Reference[] parameterRefs = e.refs("Couple", " ", true);
-                for (Reference pRef : parameterRefs) {
-                    Entity pEnt = pRef.ent();
-                    params.add(pEnt.name().toString());
-                }
-                for (String a : params) {
-                    depgraph2.addVertex(a);
-                    depgraph2.addEdge(e.name().toString(), a);
-                }
-            }
-        } catch (UnderstandException e) {
-            System.out.println("Failed opening Database:" + e.getMessage());
-            System.exit(0);
-        }
-        try {
-//Open the Understand Database
-            Database db = Understand.open(dirname1);
+            Database db = Understand.open(f.getPath());
 // Get a list of all classes and interfaces
             Entity[] funcs = db.ents("class ~unknown ~unresolved, interface ~unknown ~unresolved");
             for (Entity e : funcs) {
@@ -147,24 +92,68 @@ public class Main {
             System.out.println("Failed opening Database:" + e.getMessage());
             System.exit(0);
         }
-        System.out.println("Call Graph 1    " + callgraph1);
-        System.out.println("Call Graph 2    " + callgraph2);
-        System.out.println("Dependency Graph 1    " + depgraph1);
-        System.out.println("Dependency Graph 2    " + depgraph2);
-        //System.out.println("Inheritance Graph 1    " + inhergraph1);
-        String isocallgraph=getisocall(callgraph1, callgraph2);
-        System.out.println(isocallgraph);
-        String isodepgraph=getisodep(depgraph1, depgraph2);
-        System.out.println(isodepgraph);
-        SimpleDirectedGraph<String, DefaultEdge> inhergraph2 = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-        System.out.println("Enter class names seperated by commas for transitive closure");
-        Scanner inh=new Scanner(System.in);
-        String str = inh.nextLine();
-        String[] strArr = str.split(",");
-        inhergraph2=gettransitiveclosure(inhergraph1,strArr);
-        System.out.println("Graph with transitive closure is : " + inhergraph2);
+        return inhergraph1;
     }
-
+    //method to create call graphs
+    public static DirectedGraph<String,DefaultEdge> createcallgraph(String dirname1)
+    {
+        DirectedGraph<String, DefaultEdge> callgraph1 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        try {
+            File f= new File(dirname1);
+            //System.out.println(f.getPath());
+//Open the Understand Database
+            Database db = Understand.open(f.getPath());
+// Get a list of all functions and methods
+            Entity[] funcs = db.ents("function ~unknown ~unresolved,method ~unknown ~unresolved");
+            for (Entity e : funcs) {
+                callgraph1.addVertex(e.name().toString());
+                ArrayList<String> params = new ArrayList<String>();
+                Reference[] parameterRefs = e.refs("call", "function ~unknown ~unresolved,method ~unknown ~unresolved", true);
+                for (Reference pRef : parameterRefs) {
+                    Entity pEnt = pRef.ent();
+                    params.add(pEnt.name().toString());
+                }
+                for (String a : params) {
+                    callgraph1.addVertex(a);
+                    callgraph1.addEdge(e.name().toString(), a);
+                }
+            }
+        } catch (UnderstandException e) {
+            System.out.println("Failed opening Database:" + e.getMessage());
+            System.exit(0);
+        }
+        return callgraph1;
+    }
+    //method to create dependency graphs
+    public static DirectedGraph<String,DefaultEdge> createdirgraph(String dirname1)
+    {
+        DirectedGraph<String, DefaultEdge> depgraph1 = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        try {
+            File f= new File(dirname1);
+//Open the Understand Database
+            Database db = Understand.open(f.getPath());
+// Get a list of all classes
+            Entity[] funcs = db.ents("class ~unknown ~unresolved");
+            for (Entity e : funcs) {
+                depgraph1.addVertex(e.name().toString());
+                ArrayList<String> params = new ArrayList<String>();
+                Reference[] parameterRefs = e.refs("Couple", " ", true);
+                for (Reference pRef : parameterRefs) {
+                    Entity pEnt = pRef.ent();
+                    params.add(pEnt.name().toString());
+                }
+                for (String a : params) {
+                    depgraph1.addVertex(a);
+                    depgraph1.addEdge(e.name().toString(), a);
+                }
+            }
+        } catch (UnderstandException e) {
+            System.out.println("Failed opening Database:" + e.getMessage());
+            System.exit(0);
+        }
+        return depgraph1;
+    }
+    //method to get isomorphism and differences in call graphs
     public static String getisocall(DirectedGraph<String, DefaultEdge> callgraph1, DirectedGraph<String, DefaultEdge> callgraph2) {
         System.out.println("Call graph differences");
         ArrayList<String> tempstring = new ArrayList<>();
@@ -190,7 +179,7 @@ public class Main {
         }
         return tempstring.toString();
     }
-
+    //method to get ismorphism and differences in dependency graphs
     public static String getisodep(DirectedGraph<String, DefaultEdge> depgraph1, DirectedGraph<String, DefaultEdge> depgraph2) {
         System.out.println("Dependency graph differences");
         ArrayList<String> tempstring = new ArrayList<>();
@@ -214,6 +203,7 @@ public class Main {
         }
         return tempstring.toString();
     }
+    //method to compute transitive closure and print graph with closure
     public static SimpleDirectedGraph<String, DefaultEdge> gettransitiveclosure(DirectedGraph<String, DefaultEdge> inhergraph1,String[] strArr)
     {
         SimpleDirectedGraph<String, DefaultEdge> inhergraph2= new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
@@ -235,21 +225,5 @@ public class Main {
         }
         TransitiveClosure.INSTANCE.closeSimpleDirectedGraph((SimpleDirectedGraph)inhergraph2);
         return inhergraph2;
-    }
-    public static DirectedGraph<String, DefaultEdge> getcallgraph1()
-    {
-        return callgraph1;
-    }
-    public static DirectedGraph<String, DefaultEdge> getcallgraph2()
-    {
-        return callgraph2;
-    }
-    public static DirectedGraph<String, DefaultEdge> getdepgraph1()
-    {
-        return depgraph1;
-    }
-    public static DirectedGraph<String, DefaultEdge> getdepgraph2()
-    {
-        return depgraph2;
     }
 }
