@@ -14,8 +14,8 @@ import static org.junit.Assert.*;
  * Created by samrudhinayak on 10/8/16.
  */
 public class MainTest {
-    String projpath1="/Users/samrudhinayak/IdeaProjects/SamTest/src/main/resources/MyUnderstandProjectp1.udb";
-    String projpath2="/Users/samrudhinayak/IdeaProjects/SamTest/src/main/resources/MyUnderstandProjectp2.udb";
+    String projpath1="src/main/resources/MyUnderstandProjectp1.udb";
+    String projpath2="src/main/resources/MyUnderstandProjectp2.udb";
     //test to get create call and dependency graphs and calculate difference between the graphs
     @Test
     public void test1() throws Exception {

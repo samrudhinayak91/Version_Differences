@@ -1,2 +1,2 @@
-[0m[[0mdebug[0m] [0mSubclass fingerprints: List((junit.framework.TestCase,false,com.novocode.junit.JUnit3Fingerprint@80b15f0))[0m
-[0m[[0mdebug[0m] [0mAnnotation fingerprints: List((org.junit.runner.RunWith,false,com.novocode.junit.RunWithFingerprint@72548d61), (org.junit.Test,false,com.novocode.junit.JUnitFingerprint@22a0a24e))[0m
+[0m[[0mdebug[0m] [0mSubclass fingerprints: List((junit.framework.TestCase,false,com.novocode.junit.JUnit3Fingerprint@6ecf5c7c))[0m
+[0m[[0mdebug[0m] [0mAnnotation fingerprints: List((org.junit.runner.RunWith,false,com.novocode.junit.RunWithFingerprint@6a10ac78), (org.junit.Test,false,com.novocode.junit.JUnitFingerprint@7ea821fa))[0m
