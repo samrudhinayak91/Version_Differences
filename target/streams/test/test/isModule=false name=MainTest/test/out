@@ -1,9 +1,0 @@
-[0m[[31merror[0m] [0mTest [33mMainTest[0m.[31mmain[0m failed: java.lang.[31mUnsatisfiedLinkError[0m: Native Library /Applications/Understand.app/Contents/MacOS/Java/libUnderstand.jnilib already loaded in another classloader, took 0.015 sec[0m
-[0m[[31merror[0m] [0m    at java.lang.ClassLoader.loadLibrary0(ClassLoader.java:1907)[0m
-[0m[[31merror[0m] [0m    at java.lang.ClassLoader.loadLibrary(ClassLoader.java:1824)[0m
-[0m[[31merror[0m] [0m    at java.lang.Runtime.load0(Runtime.java:809)[0m
-[0m[[31merror[0m] [0m    at java.lang.System.load(System.java:1086)[0m
-[0m[[31merror[0m] [0m    at com.scitools.understand.Understand.loadNativeLibrary(Understand.java:94)[0m
-[0m[[31merror[0m] [0m    at com.scitools.understand.Understand.open(Understand.java:46)[0m
-[0m[[31merror[0m] [0m    at MainTest.main([35mMainTest.java[0m:[33m33[0m)[0m
-[0m[[31merror[0m] [0m    ...[0m
